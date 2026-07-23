@@ -1,0 +1,8 @@
+# Analysis and reporting checklist
+
+**Status:** planned chapter.
+
+This chapter will provide preregistration prompts, a study-design audit, data
+provenance checks, model and diagnostic reporting tables, software capture, and
+reproducible figure standards.
+
