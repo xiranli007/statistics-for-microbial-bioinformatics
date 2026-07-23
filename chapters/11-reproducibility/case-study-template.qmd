@@ -1,0 +1,18 @@
+# Paper-based case-study template
+
+Every completed case study will record:
+
+1. paper citation and biological claim;
+2. raw-data accession, license, and checksum;
+3. experimental unit and design diagram;
+4. estimand;
+5. original paper method;
+6. analysis-ready data construction;
+7. model formula and assumptions;
+8. Python analysis;
+9. selected R equivalent;
+10. diagnostics and sensitivity analyses;
+11. effect-size interpretation;
+12. comparison with the published conclusion;
+13. exercises and reproducibility session information.
+
