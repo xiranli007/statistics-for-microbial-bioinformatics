@@ -1,0 +1,9 @@
+# Interpreting predictive models
+
+**Status:** planned chapter.
+
+Learn permutation importance, partial dependence, SHAP limitations, correlated
+features, uncertainty, and why predictive importance is not a causal mechanism.
+
+**Case-study plan:** genomic feature importance for resistance prediction.
+
