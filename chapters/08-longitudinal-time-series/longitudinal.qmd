@@ -1,0 +1,10 @@
+# Longitudinal microbial studies
+
+**Status:** planned chapter.
+
+Learn baseline adjustment, change scores, repeated-measures mixed models,
+time-by-treatment interactions, missing visits, and marginal versus conditional
+trajectories.
+
+**Case-study plan:** baseline, end-of-treatment, and recovery ARG profiles.
+
