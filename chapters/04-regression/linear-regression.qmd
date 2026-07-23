@@ -1,0 +1,9 @@
+# Linear regression
+
+**Status:** planned chapter.
+
+Learn coefficient interpretation, continuous and categorical predictors,
+confidence intervals, prediction intervals, and residual diagnostics.
+
+**Case-study plan:** temperature and storage time versus bacterial concentration.
+
