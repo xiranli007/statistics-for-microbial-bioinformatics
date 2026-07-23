@@ -1,0 +1,9 @@
+# Bayesian hierarchical models
+
+**Status:** planned chapter.
+
+Learn partial pooling, varying intercepts/slopes, multilevel priors, shrinkage,
+posterior prediction, and communicating group-level heterogeneity.
+
+**Case-study plan:** treatment effects varying across facilities or studies.
+
