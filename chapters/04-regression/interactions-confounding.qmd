@@ -1,0 +1,10 @@
+# Interactions, adjustment, and confounding
+
+**Status:** planned chapter.
+
+Learn effect modification, conditional coefficients, causal diagrams, confounder
+adjustment, mediators, colliders, and why automated variable selection cannot
+replace study knowledge.
+
+**Case-study plan:** temperature-dependent antibiotic effects in aquaculture.
+
