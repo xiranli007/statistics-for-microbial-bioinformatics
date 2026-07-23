@@ -1,9 +1,156 @@
 # Probability, variation, and sampling
 
-**Status:** planned chapter.
+## Why probability enters microbiology
 
-Learn how biological variation, technical variation, sampling distributions,
-and common probability distributions connect to microbial measurements.
+Microbial measurements vary even when a protocol is repeated carefully.
+Probability models describe that variation; they do not explain away poor study
+design.
 
-**Case-study plan:** viable counts sampled from replicate food matrices.
+Useful distinctions are:
 
+- **biological variation:** real differences among cultures, tanks, animals,
+  samples, communities, or time points;
+- **sampling variation:** different independent units would give a different
+  estimate;
+- **subsampling variation:** only part of a heterogeneous sample reaches an
+  extraction, dilution, or plate;
+- **technical variation:** pipetting, extraction, amplification, sequencing, or
+  instrument variation;
+- **model-based variation:** the distribution used to connect outcomes to
+  predictors.
+
+The analysis must preserve the level at which treatment was assigned or samples
+were independently obtained. More reads, plates, or PCR wells improve
+measurement of a unit; they do not create more independent units.
+
+## Common outcome distributions
+
+| Outcome | Possible model | Important warning |
+|---|---|---|
+| colony or read count | Poisson or negative binomial | exposure, overdispersion, and zeros matter |
+| positive concentration | log-normal or gamma | nondetects need explicit treatment |
+| infected/not infected | Bernoulli/binomial | denominators and clustering matter |
+| proportion from sequencing | multinomial/compositional | components are not independent |
+| log10 CFU/g | Gaussian model may be reasonable | inspect censoring, outliers, and dependence |
+
+A distribution is chosen for the conditional outcome given the design and
+predictors. It should not be selected from a histogram alone.
+
+## Real paper case: paired soil counts
+
+Franco Meléndez et al. measured *Ralstonia solanacearum* recovered from soil
+microcosms on paired agar conditions while validating the MicroMPN workflow
+[@francomelendez2024micrompn]. Each soil sample was plated on SMSA agar with 0
+and 20 mg/L gentamicin. The full provenance is recorded under
+`micrompn_plasmid_retention` in `data/datasets.yml`.
+
+```{python}
+#| label: foundations-load-counts
+
+from pathlib import Path
+import pandas as pd
+
+counts = pd.read_csv(
+    Path("data/raw/micrompn_plasmid_retention.csv"),
+    skipinitialspace=True,
+)
+counts.columns = counts.columns.str.strip()
+counts["difference"] = counts["gent.20"] - counts["gent.0"]
+counts.groupby("Day").agg(
+    pairs=("difference", "size"),
+    mean_difference=("difference", "mean"),
+    sd_difference=("difference", "std"),
+)
+```
+
+### What is random here?
+
+For a paired comparison, the observational object is
+
+$$
+d_j=\log_{10}(\mathrm{CFU/g})_{\mathrm{GEN20},j}
+   -\log_{10}(\mathrm{CFU/g})_{\mathrm{GEN0},j}.
+$$
+
+The 75 community-amended soil samples produce 75 differences. The sampling
+distribution of the mean asks: if comparable independent soil samples were
+generated repeatedly under this protocol, how would their mean difference vary?
+It does **not** treat the two plates within a pair as independent.
+
+```{python}
+#| label: sampling-variation
+
+community = counts.loc[counts["Day"].eq("Day_4"), "difference"]
+community.agg(["count", "mean", "std", "min", "max"])
+```
+
+The standard deviation describes variation among observed paired differences.
+The standard error describes uncertainty in the estimated population mean:
+
+$$
+\mathrm{SE}(\bar d)=\frac{s_d}{\sqrt{n}}.
+$$
+
+```{python}
+#| label: sd-versus-se
+
+sd = community.std(ddof=1)
+se = sd / len(community) ** 0.5
+{"SD among pairs": sd, "SE of mean difference": se}
+```
+
+These quantities answer different questions. Reporting mean \(\pm\) SD does not
+give a confidence interval for the mean, and reporting mean \(\pm\) SE does not
+describe biological heterogeneity.
+
+## Conditional independence
+
+“Independent observations” means that after accounting for the model and design,
+one unit's residual does not provide information about another's. Dependence can
+arise from:
+
+- repeated sampling of the same tank, animal, culture, or site;
+- subsamples from the same original specimen;
+- shared experimental runs, plates, cages, batches, or sequencing lanes;
+- spatial or temporal proximity;
+- paired or matched measurements.
+
+Dependence is usually handled through aggregation at the correct unit,
+cluster-robust inference, random effects, correlation structures, or explicit
+time-series models—not by pretending the dependence is absent.
+
+## Technical replicates
+
+Suppose one soil recovery were plated three times per agar condition. Those six
+plates would improve estimation of the two counts for one soil sample. They
+would not change \(n=1\) soil sample into \(n=6\) independent samples.
+
+An analysis-ready table should retain identifiers for every level:
+
+| soil sample | agar condition | technical plate | count |
+|---|---|---|---|
+| S01 | GEN-0 | 1 | ... |
+| S01 | GEN-0 | 2 | ... |
+| S01 | GEN-20 | 1 | ... |
+
+The scientific replication level is decided from the sampling and treatment
+process, not from the number of rows after reshaping.
+
+## Practical checklist
+
+Before fitting a model, answer:
+
+1. What physical or biological object could have received a different treatment?
+2. Which measurements came from the same object?
+3. Which sources of variation are scientific targets and which are technical?
+4. Is the outcome count, continuous, binary, censored, or compositional?
+5. What population or process should the estimate generalize to?
+
+## Knowledge check
+
+1. Why do the paired plates in the MicroMPN case contribute one difference per
+   soil sample?
+2. What does the SD of the differences describe?
+3. What does the SE of their mean describe?
+4. Would doubling sequencing depth double the number of independent microbial
+   communities?

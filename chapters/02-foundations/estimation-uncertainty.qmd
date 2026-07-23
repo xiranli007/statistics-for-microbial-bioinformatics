@@ -1,9 +1,158 @@
 # Estimation and uncertainty
 
-**Status:** planned chapter.
+## Parameter, estimate, and estimand
 
-Learn parameters versus estimates, standard errors, confidence intervals,
-likelihood, and why biological precision depends on independent replication.
+A **parameter** is a feature of a population or data-generating process. An
+**estimate** is calculated from observed data. An **estimand** states exactly
+which parameter the study intends to learn.
 
-**Case-study plan:** uncertainty in pathogen log-reduction estimates.
+For the MicroMPN plasmid-retention experiment [@francomelendez2024micrompn], a
+clear estimand is:
 
+> the population mean of GEN-20 minus GEN-0 log10 CFU/g differences among
+> comparable community-amended soil microcosms at 72 hours.
+
+This is more precise than “the effect of gentamicin,” because gentamicin was in
+the agar used to enumerate recovered cells; it was not the soil treatment.
+
+## Load the paper data
+
+```{python}
+#| label: estimation-load
+
+from pathlib import Path
+import pandas as pd
+from scipy import stats
+
+counts = pd.read_csv(
+    Path("data/raw/micrompn_plasmid_retention.csv"),
+    skipinitialspace=True,
+)
+counts.columns = counts.columns.str.strip()
+community = counts.loc[counts["Day"].eq("Day_4")].copy()
+community["difference"] = community["gent.20"] - community["gent.0"]
+```
+
+Paper and data provenance are recorded under
+`micrompn_plasmid_retention` in `data/datasets.yml`.
+
+## Point estimate
+
+The natural point estimate is the sample mean paired difference:
+
+$$
+\hat{\mu}_d=\bar d=\frac{1}{n}\sum_{j=1}^{n}d_j.
+$$
+
+```{python}
+#| label: point-estimate
+
+d = community["difference"]
+n = len(d)
+estimate = d.mean()
+estimate
+```
+
+The estimate is about \(-0.047\) log10 CFU/g. A point estimate alone hides how
+precisely the experiment located the population mean.
+
+## Standard error and confidence interval
+
+For independent paired differences,
+
+$$
+\mathrm{SE}(\bar d)=s_d/\sqrt{n}.
+$$
+
+A 95% t interval is:
+
+$$
+\bar d \pm t_{0.975,n-1}\mathrm{SE}(\bar d).
+$$
+
+```{python}
+#| label: t-confidence-interval
+
+sd = d.std(ddof=1)
+se = stats.sem(d)
+t_star = stats.t.ppf(0.975, df=n - 1)
+ci = (estimate - t_star * se, estimate + t_star * se)
+
+pd.Series({
+    "estimate": estimate,
+    "SD": sd,
+    "SE": se,
+    "CI_low": ci[0],
+    "CI_high": ci[1],
+})
+```
+
+The interval is approximately \(-0.081\) to \(-0.013\) log10 CFU/g.
+Under repeated use of this procedure in comparable studies, about 95% of such
+intervals would cover the true mean difference if the model assumptions held.
+The frequentist interval does not assign a 95% probability to this already
+computed fixed interval.
+
+## Statistical versus biological precision
+
+With 75 pairs, even a small difference can be estimated precisely. Precision
+does not determine relevance. On the original scale,
+
+```{python}
+#| label: fold-scale
+
+10 ** (-estimate), 10 ** (-ci[1]), 10 ** (-ci[0])
+```
+
+GEN-0 counts were only about 1.11-fold higher on average. The authors concluded
+that the statistically detectable difference was biologically negligible for
+their plasmid-retention purpose.
+
+## What changes interval width?
+
+All else equal:
+
+- more independent units reduce the SE;
+- less between-unit variation reduces the SE;
+- a higher confidence level widens the interval;
+- dependence that is ignored makes the interval too narrow;
+- additional technical replicates help only by improving measurement of each
+  independent unit.
+
+Large \(n\) cannot rescue a biased sampling process or an incorrectly defined
+experimental unit.
+
+## Likelihood intuition
+
+Under a Gaussian model for paired differences,
+
+$$
+d_j\sim\mathcal{N}(\mu_d,\sigma_d^2).
+$$
+
+The likelihood measures how compatible candidate values of \(\mu_d\) and
+\(\sigma_d\) are with the observed differences. The sample mean is the
+maximum-likelihood estimate of \(\mu_d\) under this model. Likelihood is a
+function of parameters given observed data; it is not the probability that a
+parameter value is true.
+
+## Reporting
+
+Report, in order:
+
+1. the estimand and contrast direction;
+2. the point estimate in scientific units;
+3. the confidence interval;
+4. the number and identity of independent units;
+5. design limitations and practical relevance.
+
+> The mean paired GEN-20 minus GEN-0 contrast was \(-0.047\) log10 CFU/g
+> (95% CI \(-0.081\) to \(-0.013\); 75 soil samples), corresponding to an
+> approximately 1.11-fold difference on the CFU scale.
+
+## Knowledge check
+
+1. Which quantity is the estimand in this case?
+2. Why is SD not interchangeable with SE?
+3. Could a narrow interval still estimate the wrong target?
+4. Why must the contrast direction be stated?

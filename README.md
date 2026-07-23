@@ -18,10 +18,9 @@ Selected R equivalents are included where the R ecosystem is especially strong.
 
 ## Status
 
-The complete curriculum structure is present. The orientation, model-language,
-test-selection, and two-group comparison chapters form the first usable release.
-Remaining chapters contain explicit learning goals and example plans and will be
-filled progressively.
+The complete curriculum structure is present. Chapters are being filled
+progressively. The orientation section, statistical foundations, and two-group
+comparison chapter form the first paper-driven release.
 
 ## Read locally
 
@@ -60,13 +59,18 @@ The rendered site is written to `_site/`.
 
 ## Data policy
 
-Small derived teaching datasets may be versioned with clear provenance.
-Raw data are downloaded by scripts whenever licensing or size makes direct
-redistribution inappropriate. Every completed case study must record its paper,
-repository accession, license, download date, checksum, and processing steps.
+Every worked example must use observations from a peer-reviewed microbiology
+article. Synthetic teaching datasets are not allowed unless a proposed exception
+is discussed with and approved by the repository owner before any data are
+created.
+
+Small source datasets may be versioned when their license permits redistribution.
+Otherwise, raw data are downloaded by scripts. Every completed case study records
+the article DOI, stable data location or accession, license, exact source file,
+checksum, experimental unit, and preprocessing in
+[`data/datasets.yml`](data/datasets.yml).
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Scientific corrections, microbiology
 datasets with stable accessions, and Python/R parity improvements are welcome.
-

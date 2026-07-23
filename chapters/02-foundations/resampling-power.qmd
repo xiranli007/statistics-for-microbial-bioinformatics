@@ -1,9 +1,157 @@
-# Resampling, simulation, and power
+# Resampling and power
 
-**Status:** planned chapter.
+## What resampling preserves
 
-Learn permutation logic, bootstrap intervals, simulation-based power, and why
-the valid resampling unit must follow the experimental design.
+Resampling methods approximate repeated sampling by rearranging or reusing the
+observed data according to a null model or sampling model.
 
-**Case-study plan:** tank-level permutation in an aquaculture experiment.
+- **Bootstrap:** sample observed independent units with replacement to estimate
+  uncertainty.
+- **Permutation test:** rearrange labels in a way that would be exchangeable
+  under the null.
+- **Paired sign-flip test:** reverse the signs of paired differences under a
+  symmetric zero-centered null.
 
+The valid resampling unit must follow the design. Reads, technical wells, and
+plates cannot be permuted as if they were independent biological units.
+
+## Real paper data
+
+The case uses paired log10 CFU/g observations from the MicroMPN soil experiment
+[@francomelendez2024micrompn]. No synthetic teaching observations are created:
+all computations below resample or transform the 75 observed paired differences.
+The data are registered as `micrompn_plasmid_retention`.
+
+```{python}
+#| label: resampling-load
+
+from pathlib import Path
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+counts = pd.read_csv(
+    Path("data/raw/micrompn_plasmid_retention.csv"),
+    skipinitialspace=True,
+)
+counts.columns = counts.columns.str.strip()
+community = counts.loc[counts["Day"].eq("Day_4")]
+d = (community["gent.20"] - community["gent.0"]).to_numpy()
+d.mean()
+```
+
+## Bootstrap interval for the mean difference
+
+The bootstrap resamples whole paired differences. It does not independently
+resample GEN-0 and GEN-20 columns, which would break the matching.
+
+```{python}
+#| label: paired-bootstrap
+
+bootstrap = stats.bootstrap(
+    (d,),
+    statistic=np.mean,
+    paired=False,
+    vectorized=False,
+    n_resamples=20_000,
+    method="BCa",
+    random_state=np.random.default_rng(20260723),
+)
+bootstrap.confidence_interval
+```
+
+This interval is an empirical sensitivity check on the t interval. Bootstrap
+validity still depends on the observed independent units representing the target
+sampling process. Resampling cannot repair pseudoreplication or bias.
+
+## Paired randomization logic
+
+Under a symmetric zero-difference null, the sign of each within-sample
+difference is exchangeable. A Monte Carlo sign-flip test compares the observed
+absolute mean with means after randomly reversing signs.
+
+```{python}
+#| label: paired-sign-flip
+
+rng = np.random.default_rng(20260723)
+n_resamples = 50_000
+signs = rng.choice((-1, 1), size=(n_resamples, d.size))
+null_means = (signs * d).mean(axis=1)
+randomization_p = (
+    np.count_nonzero(np.abs(null_means) >= abs(d.mean())) + 1
+) / (n_resamples + 1)
+randomization_p
+```
+
+This computation creates a null reference distribution by reassigning signs; it
+does not invent a replacement microbiology dataset. The inferential target and
+assumptions differ slightly from the paired t test, so agreement is reassuring
+but not guaranteed.
+
+## Power requires a scientifically chosen alternative
+
+Prospective power asks:
+
+> If the true mean difference were a specified biologically important value,
+> how often would this planned design reject the null?
+
+Required inputs are:
+
+- smallest effect worth detecting;
+- expected SD among independent paired differences;
+- significance level and sidedness;
+- planned number of independent pairs;
+- multiplicity rule;
+- expected missingness and design imbalance.
+
+The MicroMPN data can inform the SD, but the dataset cannot choose the smallest
+biologically important effect. That threshold is a scientific decision.
+
+```{python}
+#| label: observed-sd-for-planning
+
+{"observed_pairs": d.size, "observed_SD_of_differences": d.std(ddof=1)}
+```
+
+Once a justified target difference \(\delta\) is supplied, its standardized
+effect is \(|\delta|/s_d\), and a prospective calculation can be made:
+
+```{python}
+#| eval: false
+
+from statsmodels.stats.power import TTestPower
+
+delta = ...  # prespecified biologically important log10-CFU/g difference
+standardized_effect = abs(delta) / pilot_sd
+required_pairs = TTestPower().solve_power(
+    effect_size=standardized_effect,
+    alpha=0.05,
+    power=0.80,
+    alternative="two-sided",
+)
+```
+
+Do not insert the observed effect from the completed study into a “post hoc
+power” calculation. The confidence interval already expresses the information
+about effect magnitude and precision.
+
+## Clustered and longitudinal designs
+
+For tanks, farms, batches, or repeated samples, resample or permute at the level
+where exchangeability holds:
+
+- treatment assigned to tanks → permute tank labels;
+- repeated time points within tanks → keep each tank trajectory together;
+- samples nested in sequencing batches → preserve the design restrictions;
+- paired specimens → resample complete pairs.
+
+Unrestricted row shuffling can produce a very precise answer to the wrong
+experiment.
+
+## Knowledge check
+
+1. Why does the paired bootstrap resample differences rather than individual
+   columns?
+2. What null assumption supports sign flipping?
+3. Which input to a power calculation cannot be learned from the observed SD?
+4. Why is observed post hoc power redundant with the p-value?

@@ -19,6 +19,7 @@ Every statistical-method chapter should include:
 
 ## Dataset acceptance checklist
 
+- Peer-reviewed microbiology article
 - Stable paper DOI or full citation
 - Stable raw-data accession or repository URL
 - Reuse license checked
@@ -27,6 +28,10 @@ Every statistical-method chapter should include:
 - Processing script from raw to analysis-ready data
 - Data dictionary with units, missing-value codes, and sampling unit
 - No human-identifiable data
+
+Do not invent a synthetic replacement when a suitable paper dataset cannot be
+found. Open a discussion with the repository owner, describe the missing data
+need, and wait for approval before creating any simulated teaching observations.
 
 ## Development
 
@@ -37,4 +42,3 @@ quarto render
 ```
 
 Do not commit `_site/`, virtual environments, caches, or unlicensed raw data.
-
