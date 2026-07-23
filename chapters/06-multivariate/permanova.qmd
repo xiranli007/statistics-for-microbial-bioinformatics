@@ -1,0 +1,9 @@
+# PERMANOVA and multivariate dispersion
+
+**Status:** planned chapter.
+
+Learn permutation exchangeability, restricted permutations, sequential versus
+marginal terms, \(R^2\), centroid-versus-dispersion ambiguity, and post-hoc tests.
+
+**Case-study plan:** treatment and temperature effects on microbial communities.
+
