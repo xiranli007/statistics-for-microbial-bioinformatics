@@ -1,0 +1,9 @@
+# Models for counts and rates
+
+**Status:** planned chapter.
+
+Learn Poisson and negative-binomial models, exposure offsets, dispersion,
+incidence-rate ratios, and the distinction between counts and concentrations.
+
+**Case-study plan:** ARG read counts with library-size offsets.
+
