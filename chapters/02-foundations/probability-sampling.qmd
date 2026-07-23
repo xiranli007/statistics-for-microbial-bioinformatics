@@ -1,0 +1,9 @@
+# Probability, variation, and sampling
+
+**Status:** planned chapter.
+
+Learn how biological variation, technical variation, sampling distributions,
+and common probability distributions connect to microbial measurements.
+
+**Case-study plan:** viable counts sampled from replicate food matrices.
+
