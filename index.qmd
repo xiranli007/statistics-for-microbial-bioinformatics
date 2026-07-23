@@ -1,0 +1,52 @@
+---
+title: "Start here"
+---
+
+# Learn models as answers to biological questions
+
+This guide is designed for researchers who can run an analysis but want to
+understand why the model is appropriate, what its terms mean, and what evidence
+its significance test actually provides.
+
+A statistical method is never selected from the outcome alone. The correct
+choice depends on five linked decisions:
+
+1. **Biological question:** description, explanation, causal effect, or prediction?
+2. **Outcome:** continuous, binary, count, proportion, time-to-event, or multivariate?
+3. **Sampling unit:** what was independently assigned or sampled?
+4. **Dependence:** repeated observations, tanks, batches, sites, or phylogenetic links?
+5. **Estimand:** which numerical quantity would answer the question?
+
+## How to use the guide
+
+Read Parts I–II in order. Then follow the method-selection chapter to a model
+family. Every completed method chapter follows the same sequence:
+
+> biological question → data structure → model → assumptions → inference →
+> effect size → diagnostics → interpretation → Python → selected R equivalent
+
+Code is secondary to the model logic. Each case study ends with a short audit:
+what could invalidate the conclusion, what the paper reported, and what we
+would report today.
+
+## Recurring microbiology study
+
+Several chapters use a conceptual postharvest-water experiment:
+
+- 12 independent recirculating systems;
+- three temperatures;
+- sanitizer versus control;
+- repeated samples over time;
+- plate counts, qPCR targets, and amplicon profiles.
+
+The same design lets us show why a t test can be appropriate for one contrast,
+why repeated samples cannot be treated as independent, why counts may need a
+negative-binomial model, and why community-level claims require multivariate
+methods.
+
+::: {.callout-important}
+The number of observations in a spreadsheet is not necessarily the sample size.
+If treatment was assigned to tanks, systems, or batches, those units—not every
+aliquot or sequencing row—determine independent replication.
+:::
+
