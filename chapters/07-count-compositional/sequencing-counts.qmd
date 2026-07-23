@@ -1,0 +1,9 @@
+# Sequencing counts are observations, not absolute abundance
+
+**Status:** planned chapter.
+
+Learn library size, sampling fractions, mean–variance relationships, offsets,
+normalization, rarefaction questions, and how measurement design limits claims.
+
+**Case-study plan:** amplicon and shotgun count matrices with spike-in context.
+
