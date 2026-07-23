@@ -1,0 +1,10 @@
+# Random intercepts and random slopes
+
+**Status:** planned chapter.
+
+Learn what including a factor as a random effect means, partial pooling,
+intraclass correlation, variance components, random slopes, singular fits, and
+fixed-versus-random decisions tied to the estimand.
+
+**Case-study plan:** longitudinal bacterial abundance across recirculating tanks.
+
