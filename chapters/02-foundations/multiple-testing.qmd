@@ -1,0 +1,9 @@
+# Multiple testing and false discoveries
+
+**Status:** planned chapter.
+
+Learn family-wise error, false-discovery rate, Benjamini–Hochberg adjustment,
+independent filtering, and why “significant taxa” depend on the tested family.
+
+**Case-study plan:** screening antimicrobial-resistance genes across treatments.
+
