@@ -1,0 +1,9 @@
+# Validation, leakage, and grouped data
+
+**Status:** planned chapter.
+
+Learn train/test separation, grouped and nested cross-validation, preprocessing
+inside folds, temporal splits, hyperparameter tuning, and external validation.
+
+**Case-study plan:** isolate classification with strain-related samples grouped.
+
