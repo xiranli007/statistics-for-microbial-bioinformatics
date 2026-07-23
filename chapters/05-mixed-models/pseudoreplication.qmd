@@ -1,0 +1,9 @@
+# Dependence, hierarchy, and pseudoreplication
+
+**Status:** planned chapter.
+
+Learn to distinguish biological from technical replication and map repeated,
+nested, and crossed sampling structures before choosing a model.
+
+**Case-study plan:** fish nested in tanks with repeated water samples.
+
