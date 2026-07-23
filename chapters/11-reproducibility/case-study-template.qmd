@@ -2,8 +2,8 @@
 
 Every completed case study will record:
 
-1. paper citation and biological claim;
-2. raw-data accession, license, and checksum;
+1. peer-reviewed paper citation, DOI, and biological claim;
+2. raw-data accession, exact source file, license, and checksum;
 3. experimental unit and design diagram;
 4. estimand;
 5. original paper method;
@@ -16,3 +16,6 @@ Every completed case study will record:
 12. comparison with the published conclusion;
 13. exercises and reproducibility session information.
 
+Worked observations must come from the cited paper and have a registry entry in
+`data/datasets.yml`. If no appropriate public paper dataset exists, stop and ask
+the repository owner before proposing any synthetic example.
