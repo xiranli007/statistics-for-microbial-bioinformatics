@@ -1,0 +1,10 @@
+# Community tables, transformations, and distances
+
+**Status:** planned chapter.
+
+Learn how normalization, transformation, and ecological distance encode
+different biological questions, including Bray–Curtis, Jaccard, Aitchison, and
+phylogenetic distances.
+
+**Case-study plan:** 16S communities in produce wash water.
+
