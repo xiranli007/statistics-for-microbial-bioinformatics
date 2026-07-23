@@ -1,0 +1,10 @@
+# Rank-based and robust comparisons
+
+**Status:** planned chapter.
+
+Learn what Wilcoxon, Mann–Whitney, and Kruskal–Wallis tests estimate; when ranks
+help; when robust regression, transformation, or permutation better matches the
+question; and why these are not generic “non-normal data” buttons.
+
+**Case-study plan:** skewed biofilm biomass across surface materials.
+
