@@ -1,0 +1,9 @@
+# Generalized linear mixed models
+
+**Status:** planned chapter.
+
+Learn binary and count mixed models, marginal versus conditional effects,
+overdispersion, convergence, and likelihood-based inference near boundaries.
+
+**Case-study plan:** repeated pathogen detections across processing facilities.
+
