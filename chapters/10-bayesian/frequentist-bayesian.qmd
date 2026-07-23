@@ -1,0 +1,10 @@
+# Frequentist and Bayesian reasoning
+
+**Status:** planned chapter.
+
+Learn how the frameworks define probability and uncertainty, what confidence
+and credible intervals mean, and why neither framework automatically fixes poor
+design or model misspecification.
+
+**Case-study plan:** compare the same sanitizer-effect model in both frameworks.
+
