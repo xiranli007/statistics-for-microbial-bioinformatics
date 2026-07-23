@@ -1,0 +1,107 @@
+# A common language for statistical models
+
+## The linear model as a sentence
+
+For observation \(i\),
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \epsilon_i,
+\qquad \epsilon_i \sim \mathcal{N}(0,\sigma^2).
+$$
+
+Read this as:
+
+- \(y_i\): the outcome, such as log CFU/mL;
+- \(\beta_0\): expected outcome when \(x=0\);
+- \(\beta_1\): expected change in the outcome for a one-unit increase in \(x\);
+- \(\epsilon_i\): unexplained observation-level deviation;
+- \(\sigma\): residual standard deviation.
+
+A t test, ANOVA, and multiple linear regression are variations of this same
+framework. The predictor coding and the scientific contrast change; the core
+model does not.
+
+## Fixed effects
+
+A **fixed effect** estimates a systematic population-level relationship or
+contrast of scientific interest. If temperature is represented by indicators
+for 20, 25, and 30 °C, its coefficients compare the expected outcome at those
+specific conditions. “Fixed” does not mean the values never change.
+
+## Random effects
+
+For sample \(i\) from tank \(j\),
+
+$$
+y_{ij} = \beta_0 + \beta_1 x_{ij} + b_{0j} + \epsilon_{ij},
+\qquad b_{0j}\sim\mathcal{N}(0,\tau^2).
+$$
+
+The tank-specific random intercept \(b_{0j}\) allows each tank to have its own
+baseline while estimating how baselines vary across tanks through \(\tau\).
+Including tank as a random effect says that:
+
+1. observations from the same tank share a source of variation;
+2. the observed tanks are treated as draws from a broader population of tanks;
+3. tank-specific deviations are partially pooled toward the overall mean.
+
+It does **not** mean tank is unimportant or chosen randomly in casual language.
+
+Use a random effect because the sampling/design structure requires it—not merely
+because a variable has many levels. With very few groups, variance estimates can
+be unstable. A fixed blocking effect, generalized estimating equation, or
+cluster-robust approach may sometimes better match the estimand.
+
+## Random slopes
+
+If time trends differ by tank:
+
+$$
+y_{ij} = \beta_0 + \beta_1 t_{ij} + b_{0j} + b_{1j}t_{ij}+\epsilon_{ij}.
+$$
+
+Here \(b_{1j}\) lets the time effect vary among tanks. A random-intercept-only
+model assumes all tanks have the same slope, which may be biologically
+implausible.
+
+## Link functions and generalized models
+
+Outcomes need not be normally distributed. A generalized linear model expresses
+
+$$
+g\{E(Y_i)\} = \eta_i = \mathbf{x}_i^\top\boldsymbol{\beta}.
+$$
+
+The link \(g\) connects the expected outcome to the linear predictor:
+
+| Outcome | Common distribution | Link | Coefficient scale |
+|---|---|---|---|
+| Continuous | Gaussian | identity | mean difference |
+| Binary | binomial | logit | log odds |
+| Count | Poisson/negative binomial | log | log rate or count ratio |
+| Proportion from counts | binomial/beta-binomial | logit | log odds |
+
+Exponentiating a log-link coefficient gives a multiplicative ratio.
+Exponentiating a logit coefficient gives an odds ratio.
+
+## Interaction
+
+In \(y=\beta_0+\beta_1T+\beta_2S+\beta_3TS+\epsilon\), \(\beta_3\) asks whether
+the sanitizer effect changes with temperature. When an interaction is present,
+the “main effect” of sanitizer is conditional on the reference temperature.
+
+## What “significance” tests
+
+Different procedures test coefficients differently:
+
+- Wald test: estimate divided by its estimated standard error;
+- likelihood-ratio test: compare nested models by likelihood;
+- score test: assess the likelihood slope at the null;
+- permutation test: compare a statistic with results under allowed label shuffles;
+- bootstrap: approximate sampling uncertainty by resampling;
+- Bayesian model: summarize a posterior distribution rather than generating a
+  frequentist p-value by default.
+
+These procedures can disagree in small samples or near parameter boundaries.
+The chapter for each model explains which procedure is trustworthy and why.
+
