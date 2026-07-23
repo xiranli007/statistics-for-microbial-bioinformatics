@@ -1,0 +1,9 @@
+# Nonlinear trajectories, splines, and GAMs
+
+**Status:** planned chapter.
+
+Learn spline bases, smoothing penalties, effective degrees of freedom,
+overfitting, nonlinear interactions, and uncertainty in microbial growth curves.
+
+**Case-study plan:** temperature-specific growth and inactivation trajectories.
+
