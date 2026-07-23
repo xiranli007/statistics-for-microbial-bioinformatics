@@ -1,0 +1,10 @@
+# Principal component analysis
+
+**Status:** planned chapter.
+
+Learn PCA geometry, centering/scaling, loadings, scores, explained variance,
+appropriate transformations, and why PCA is exploratory rather than a group
+significance test.
+
+**Case-study plan:** functional profiles from microbial metagenomes.
+
