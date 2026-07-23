@@ -1,0 +1,9 @@
+# Compositional data analysis
+
+**Status:** planned chapter.
+
+Learn closure, log ratios, reference choices, CLR/ALR/ILR coordinates, zeros,
+balances, and the difference between relative and absolute change.
+
+**Case-study plan:** taxon ratios in recirculated produce wash water.
+
