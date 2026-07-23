@@ -1,0 +1,9 @@
+# Resampling, simulation, and power
+
+**Status:** planned chapter.
+
+Learn permutation logic, bootstrap intervals, simulation-based power, and why
+the valid resampling unit must follow the experimental design.
+
+**Case-study plan:** tank-level permutation in an aquaculture experiment.
+
