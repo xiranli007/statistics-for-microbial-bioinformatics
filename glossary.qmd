@@ -1,0 +1,41 @@
+# Glossary
+
+**Confidence interval**  
+A procedure that, under repeated sampling and model assumptions, produces
+intervals covering the target parameter at the stated long-run rate.
+
+**Credible interval**  
+An interval containing a stated posterior probability for a parameter under the
+Bayesian model and prior.
+
+**Effect size**  
+A numerical magnitude of a contrast or relationship on a stated scale.
+
+**Estimand**  
+The population quantity the analysis is intended to estimate.
+
+**Experimental unit**  
+The smallest unit independently assigned to a treatment.
+
+**Fixed effect**  
+A modeled population-level contrast or relationship represented by coefficients.
+
+**Likelihood**  
+The probability model for observed data viewed as a function of parameters.
+
+**p-value**  
+Under a specified null model, the probability of a test statistic at least as
+incompatible with that model as the observed statistic.
+
+**Pseudoreplication**  
+Treating non-independent subsamples or repeated observations as independent
+replicates for the scientific effect.
+
+**Random effect**  
+A group-specific deviation modeled as arising from a population distribution,
+used to represent structured heterogeneity and dependence.
+
+**Residual**  
+An observed outcome minus its fitted value; a diagnostic quantity, not the
+unobservable model error itself.
+
