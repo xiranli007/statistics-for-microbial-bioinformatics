@@ -1,0 +1,9 @@
+# Categorical outcomes and contingency tables
+
+**Status:** planned chapter.
+
+Learn chi-square and Fisher exact tests, paired binary data, risk differences,
+risk ratios, odds ratios, sparse tables, and transition to logistic regression.
+
+**Case-study plan:** pathogen detection by enrichment medium.
+
