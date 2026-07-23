@@ -1,0 +1,9 @@
+# Estimation and uncertainty
+
+**Status:** planned chapter.
+
+Learn parameters versus estimates, standard errors, confidence intervals,
+likelihood, and why biological precision depends on independent replication.
+
+**Case-study plan:** uncertainty in pathogen log-reduction estimates.
+
