@@ -2,142 +2,305 @@
 
 ## Questions answered
 
-A two-sample t test estimates a difference in population means. In microbiology,
-a suitable outcome might be log CFU/mL, enzyme activity, or a continuous
-phenotype measured once per independent system.
+A t test estimates a mean contrast. The word *mean* matters: the method is about
+the average of a continuous outcome, not automatically about any two-column
+dataset.
+
+In microbiology, appropriate outcomes often include log-transformed viable
+counts, enzyme activity, growth rate, or another approximately continuous
+phenotype measured once per independent experimental unit.
 
 It is not automatically appropriate for:
 
 - raw, highly skewed counts;
 - repeated samples treated as independent;
-- observations below a detection limit;
+- values censored at a detection limit;
 - compositional relative abundances;
-- a multi-factor experiment whose interaction matters.
+- a multifactor experiment whose interaction matters.
 
 ## Three related tests
 
-| Test | Design | Null contrast | Key condition |
+| Test | Design | Null contrast | Independent units |
 |---|---|---|---|
-| One-sample | one independent sample | \(\mu-\mu_0=0\) | independent units |
-| Paired | matched pairs | mean within-pair difference = 0 | independent pairs |
-| Two-sample Welch | two independent groups | \(\mu_1-\mu_2=0\) | independent units; unequal variances allowed |
+| One-sample | one sample against a reference | \(\mu-\mu_0=0\) | observations |
+| Paired | two linked measurements per unit | mean within-pair difference \(=0\) | pairs |
+| Two-sample Welch | two independent groups | \(\mu_1-\mu_2=0\) | observations within groups |
 
-Welch's test should generally be the default for two independent groups because
-it does not require equal variances.
+Welch's test is generally the safer default for independent groups because it
+does not assume equal group variances. Pairing is determined by the design, not
+by whether two columns happen to be correlated.
 
-## The model
+## The models
 
-With `treatment = 0` for control and `1` for sanitizer:
+For independent groups, with \(x_i=1\) for treatment and \(0\) for control,
 
 $$
-y_i=\beta_0+\beta_1\mathrm{treatment}_i+\epsilon_i.
+y_i=\beta_0+\beta_1x_i+\epsilon_i.
 $$
 
 \(\beta_0\) is the control mean and \(\beta_1\) is the treated-minus-control
-mean difference. The classical equal-variance two-sample t test is the test of
+mean difference. The equal-variance two-sample t test is the test of
 \(H_0:\beta_1=0\) in this linear model.
 
-## Worked simulated teaching example
+For paired data, first define a within-unit difference:
 
-The following data are explicitly simulated, not presented as paper data. They
-show the analysis contract that later paper-based cases will follow.
+$$
+d_j=y_{\text{condition 2},j}-y_{\text{condition 1},j}.
+$$
+
+Then fit the intercept-only model \(d_j=\mu_d+\epsilon_j\). The paired t test
+tests \(H_0:\mu_d=0\). Variation shared by both observations in a pair is removed
+from the contrast.
+
+## Real paper case study: plasmid retention in soil
+
+Franco Meléndez and colleagues developed a fluorescent most-probable-number
+workflow for measuring suppression of *Ralstonia solanacearum* in soil
+microcosms [@francomelendez2024micrompn]. Their reporter plasmid carried a
+gentamicin-resistance marker. To assess plasmid retention without maintaining
+antibiotic selection in the soil experiment, each recovered soil sample was
+plated on paired media containing 0 or 20 mg/L gentamicin.
+
+If plasmid-bearing cells were lost, the gentamicin plate would be expected to
+yield fewer colonies than the no-gentamicin plate. The paper therefore compared
+paired log10 CFU/g counts.
+
+### Provenance
+
+- **Peer-reviewed article:** Franco Meléndez et al. (2024), *Microbiology
+  Spectrum*, DOI [10.1128/spectrum.03578-23](https://doi.org/10.1128/spectrum.03578-23)
+- **Paper data:** [`USDA-ARS-GBRU/MicroMPN_data-files`](https://github.com/USDA-ARS-GBRU/MicroMPN_data-files),
+  `plasmid_retention/R_analysis/data_simple_complex.csv`
+- **Archived source commit:** `af4ca88afda1ea3c446ee2d4d9c2245e0eabe0e1`
+- **License:** CC0-1.0
+- **Source checksum:** `971729f84ec21d21b2339de034d6f478e3aa4b2a8b9d6f9d112412e8b015ca95`
+- **Local LF-normalized checksum:** `dc3435e693e61fca2ed964af45b4a5306c4d9a464ef8ca00cde5b7ecbf1d79f0`
+- **Registry key:** `micrompn_plasmid_retention` in `data/datasets.yml`
+
+The archived file labels community-amended soil as `Day_4`; this is a dataset
+label, not a claim that it is the fourth time point in the same unamended-soil
+series. The paper describes this comparison as 72 hours post-inoculation.
 
 ```{python}
-#| label: t-test-example
-#| fig-cap: "Independent system-level log reductions by treatment."
+#| label: load-micrompn-paired
+
+from pathlib import Path
+import hashlib
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib.pyplot as plt
 from scipy import stats
 
-rng = np.random.default_rng(20260723)
-control = rng.normal(0.4, 0.25, 10)
-sanitizer = rng.normal(1.3, 0.45, 10)
-dat = pd.DataFrame({
-    "log_reduction": np.r_[control, sanitizer],
-    "treatment": ["Control"] * 10 + ["Sanitizer"] * 10,
-})
+path = Path("data/raw/micrompn_plasmid_retention.csv")
+expected_sha256 = "dc3435e693e61fca2ed964af45b4a5306c4d9a464ef8ca00cde5b7ecbf1d79f0"
+assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_sha256
 
-result = stats.ttest_ind(sanitizer, control, equal_var=False)
-effect = sanitizer.mean() - control.mean()
-effect, result.statistic, result.pvalue
-
-sns.pointplot(
-    data=dat, x="treatment", y="log_reduction",
-    errorbar=("ci", 95), capsize=0.15
-)
+counts = pd.read_csv(path, skipinitialspace=True)
+counts.columns = counts.columns.str.strip()
+counts["difference"] = counts["gent.20"] - counts["gent.0"]
+counts.groupby("Day").size()
 ```
 
-The p-value assesses a zero mean difference under the model. It does not measure
-the size or practical importance of the sanitizer effect.
+The experimental unit is the soil sample. Its two plate counts are measurements
+of the same unit, so an unpaired test would discard the design information.
 
-## Confidence interval for the Welch difference
+### Estimate the contrast
+
+The community-amended comparison contains 75 pairs.
 
 ```{python}
-#| label: welch-ci
+#| label: paired-estimate
 
-n1, n0 = len(sanitizer), len(control)
-v1, v0 = sanitizer.var(ddof=1), control.var(ddof=1)
-se = np.sqrt(v1 / n1 + v0 / n0)
-df = (v1 / n1 + v0 / n0) ** 2 / (
-    (v1 / n1) ** 2 / (n1 - 1) + (v0 / n0) ** 2 / (n0 - 1)
+community = counts.loc[counts["Day"].eq("Day_4")].copy()
+diff = community["difference"]
+
+n = diff.size
+mean_difference = diff.mean()
+sd_difference = diff.std(ddof=1)
+se_difference = stats.sem(diff)
+critical = stats.t.ppf(0.975, df=n - 1)
+ci = (
+    mean_difference - critical * se_difference,
+    mean_difference + critical * se_difference,
 )
-critical = stats.t.ppf(0.975, df)
-ci = (effect - critical * se, effect + critical * se)
-effect, ci
+
+paired_test = stats.ttest_rel(community["gent.20"], community["gent.0"])
+fold_difference = 10 ** (-mean_difference)
+
+pd.Series({
+    "pairs": n,
+    "mean_log10_difference": mean_difference,
+    "95%_CI_low": ci[0],
+    "95%_CI_high": ci[1],
+    "t": paired_test.statistic,
+    "df": n - 1,
+    "unadjusted_p": paired_test.pvalue,
+    "fold_difference_GEN0_over_GEN20": fold_difference,
+})
 ```
 
-Report the estimated mean log-reduction difference with this interval and the
-experimental-unit sample sizes. Do not report only “significant.”
+The estimated contrast is about \(-0.047\) log10 CFU/g for GEN-20 minus GEN-0,
+with a 95% confidence interval of approximately \(-0.081\) to \(-0.013\).
+This corresponds to only about 1.11-fold more colonies on GEN-0 than GEN-20.
+
+The paper tested five paired comparisons and applied Bonferroni correction:
+
+```{python}
+#| label: paired-tests-all-days
+
+results = []
+for day, frame in counts.groupby("Day", sort=True):
+    test = stats.ttest_rel(frame["gent.20"], frame["gent.0"])
+    results.append({
+        "comparison": day,
+        "pairs": len(frame),
+        "mean_GEN20_minus_GEN0": frame["difference"].mean(),
+        "t": test.statistic,
+        "df": len(frame) - 1,
+        "raw_p": test.pvalue,
+    })
+
+tests = pd.DataFrame(results)
+tests["bonferroni_p"] = np.minimum(tests["raw_p"] * len(tests), 1.0)
+tests
+```
+
+For the community-amended soil, the unadjusted p-value is about 0.0074 and the
+five-test Bonferroni-adjusted p-value is about 0.037, reproducing the published
+result. The crucial interpretation is the paper's own distinction:
+statistically detectable does not mean biologically important. The effect was
+small enough that the authors considered plasmid retention adequate for the
+experiment.
+
+```{python}
+#| label: paired-plot
+#| fig-cap: "Paired Ralstonia counts from the community-amended soil microcosms. Each line joins measurements of the same soil sample."
+
+plot_data = community.rename(columns={"gent.0": "GEN-0", "gent.20": "GEN-20"})
+long = (
+    plot_data.reset_index(names="pair")
+    .melt(
+        id_vars="pair",
+        value_vars=["GEN-0", "GEN-20"],
+        var_name="agar",
+        value_name="log10_cfu_g",
+    )
+)
+
+fig, ax = plt.subplots(figsize=(6, 4))
+for _, pair in long.groupby("pair"):
+    ax.plot(pair["agar"], pair["log10_cfu_g"], color="0.75", alpha=0.35, linewidth=0.8)
+sns.pointplot(
+    data=long,
+    x="agar",
+    y="log10_cfu_g",
+    errorbar=("ci", 95),
+    color="#B33A3A",
+    markers="D",
+    capsize=0.12,
+    ax=ax,
+)
+ax.set(xlabel="SMSA agar", ylabel="log10 CFU/g")
+plt.show()
+```
 
 ## Assumptions
 
 ### Design assumptions
 
-- Experimental units are independent across groups.
-- Treatment assignment or sampling supports the intended population inference.
-- Outcome definitions and measurement processes are comparable.
+- Pairs are correctly matched: both counts arise from the same soil sample.
+- Soil samples are independent of other soil samples at the inferential level.
+- The plating and recovery procedures are comparable within each pair.
+- The sample collection supports the intended scope of inference.
 
-These cannot be repaired by a normality test.
+These assumptions cannot be repaired or verified by a normality test.
 
 ### Distributional assumptions
 
-- The sampling distribution of each group mean is adequately approximated.
-- Welch's standard error represents group variances.
-- Extreme outliers are not dominating the mean.
+- The **paired differences**, not the two marginal columns, are approximately
+  sampled from a population for which the mean and standard error are meaningful.
+- Extreme differences do not dominate the result.
+- For small samples, the difference distribution should not be strongly skewed
+  or heavy-tailed. With larger samples, inference for the mean is more robust,
+  although dependence and bad experimental units remain fatal problems.
 
-A nonsignificant Shapiro–Wilk test does not prove normality, especially with
-small samples. Inspect the raw data and residuals, consider the measurement
-scale, and use a sensitivity analysis when conclusions hinge on a few points.
+A nonsignificant Shapiro--Wilk test does not prove normality. Inspect the paired
+differences and run a sensitivity analysis when a few observations control the
+conclusion.
 
-## Paired example structure
+```{python}
+#| label: paired-diagnostics
 
-For the same systems before and after treatment, compute
-\(d_j=y_{\mathrm{after},j}-y_{\mathrm{before},j}\), then use a one-sample t test
-on \(d_j\). The assumptions concern the distribution and independence of the
-**differences**, not the two marginal measurements.
+fig, axes = plt.subplots(1, 2, figsize=(9, 3.5))
+sns.histplot(diff, kde=True, ax=axes[0])
+axes[0].axvline(0, color="black", linestyle="--", linewidth=1)
+axes[0].set(xlabel="GEN-20 minus GEN-0 (log10 CFU/g)")
+stats.probplot(diff, dist="norm", plot=axes[1])
+plt.tight_layout()
+plt.show()
+
+stats.wilcoxon(diff)
+```
+
+The Wilcoxon signed-rank test addresses a different target based on ranks and
+symmetry, so it is not a drop-in “nonparametric paired t test.” Here it serves as
+a sensitivity analysis, not as a method selected after a normality pretest.
+
+## Independent-group version
+
+When two groups contain different experimental units, use Welch's t test:
+
+```{python}
+#| eval: false
+
+stats.ttest_ind(treated, control, equal_var=False)
+```
+
+The Welch--Satterthwaite degrees of freedom account for unequal variance. Report
+the mean contrast and its confidence interval, not only the p-value.
 
 ## R equivalent
 
 ```{r}
 #| eval: false
-t.test(log_reduction ~ treatment, data = dat) # Welch by default
-t.test(after, before, paired = TRUE)
+
+counts <- read.csv("data/raw/micrompn_plasmid_retention.csv",
+                   check.names = FALSE,
+                   strip.white = TRUE)
+community <- subset(counts, Day == "Day_4")
+
+t.test(community[["gent.20"]], community[["gent.0"]],
+       paired = TRUE)
+
+# Independent groups: Welch is the R default.
+t.test(outcome ~ treatment, data = independent_data)
 ```
 
 ## Common errors
 
-- using technical replicate wells as independent \(n\);
-- choosing paired or unpaired testing from correlation rather than design;
-- testing raw CFU counts when a log scale matches the scientific contrast;
-- replacing effect estimates with stars;
-- switching to a rank test solely because a normality pretest is significant;
-- interpreting “not significant” as proof of no meaningful effect.
+- using technical replicate wells or plates as independent \(n\);
+- choosing paired versus unpaired analysis from the observed correlation;
+- testing raw CFU counts when a log scale matches the biological contrast;
+- reporting only “significant” without the mean difference and interval;
+- treating an adjusted p-value as an effect size;
+- switching tests solely because a normality pretest crosses 0.05;
+- interpreting “not significant” as proof of equivalence.
 
-## Reporting template
+## Reporting example
 
-> Sanitizer increased mean log reduction by [estimate] log10 CFU/mL (Welch 95%
-> CI [lower, upper]; \(t(df)=[value]\), \(p=[value]\); [n] independent systems
-> per group). System-level observations showed [diagnostic summary].
+> In community-amended soil, paired GEN-20 counts were 0.047 log10 CFU/g lower
+> than GEN-0 counts (95% CI 0.013 to 0.081 lower; paired
+> \(t(74)=-2.75\), Bonferroni-adjusted \(p=0.037\); 75 soil samples). The
+> approximately 1.11-fold difference was statistically detectable but small in
+> relation to the plasmid-retention question.
 
+## Knowledge check
+
+1. Why are the two agar counts paired?
+2. What would become the experimental unit if three technical plates were made
+   from each recovered soil sample?
+3. Why does adjusted \(p=0.037\) not imply a large loss of the plasmid?
+4. What additional design would be needed to make a formal claim that loss is
+   smaller than a biologically acceptable margin?
