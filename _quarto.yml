@@ -1,0 +1,97 @@
+project:
+  type: book
+  output-dir: _site
+
+book:
+  title: "Statistics for Microbial Bioinformatics"
+  subtitle: "Models, assumptions, inference, and real-data practice"
+  author: "Xiran Li"
+  chapters:
+    - index.qmd
+    - part: "I. Orientation"
+      chapters:
+        - chapters/01-orientation/statistical-thinking.qmd
+        - chapters/01-orientation/model-language.qmd
+        - chapters/01-orientation/choose-a-method.qmd
+    - part: "II. Statistical foundations"
+      chapters:
+        - chapters/02-foundations/probability-sampling.qmd
+        - chapters/02-foundations/estimation-uncertainty.qmd
+        - chapters/02-foundations/hypothesis-testing.qmd
+        - chapters/02-foundations/resampling-power.qmd
+        - chapters/02-foundations/multiple-testing.qmd
+    - part: "III. Classical group comparisons"
+      chapters:
+        - chapters/03-classical-tests/t-tests.qmd
+        - chapters/03-classical-tests/anova.qmd
+        - chapters/03-classical-tests/nonparametric.qmd
+        - chapters/03-classical-tests/categorical.qmd
+    - part: "IV. Regression and generalized models"
+      chapters:
+        - chapters/04-regression/linear-regression.qmd
+        - chapters/04-regression/interactions-confounding.qmd
+        - chapters/04-regression/logistic-regression.qmd
+        - chapters/04-regression/count-models.qmd
+        - chapters/04-regression/diagnostics-selection.qmd
+    - part: "V. Repeated measures and mixed models"
+      chapters:
+        - chapters/05-mixed-models/pseudoreplication.qmd
+        - chapters/05-mixed-models/random-effects.qmd
+        - chapters/05-mixed-models/glmm.qmd
+    - part: "VI. Multivariate microbial ecology"
+      chapters:
+        - chapters/06-multivariate/distance-transformations.qmd
+        - chapters/06-multivariate/pca.qmd
+        - chapters/06-multivariate/pcoa-nmds.qmd
+        - chapters/06-multivariate/permanova.qmd
+        - chapters/06-multivariate/constrained-ordination.qmd
+    - part: "VII. Counts, compositions, and omics"
+      chapters:
+        - chapters/07-count-compositional/sequencing-counts.qmd
+        - chapters/07-count-compositional/differential-abundance.qmd
+        - chapters/07-count-compositional/compositional-data.qmd
+        - chapters/07-count-compositional/zero-inflation.qmd
+        - chapters/07-count-compositional/batch-effects.qmd
+    - part: "VIII. Longitudinal and time-dependent data"
+      chapters:
+        - chapters/08-longitudinal-time-series/longitudinal.qmd
+        - chapters/08-longitudinal-time-series/splines-gam.qmd
+        - chapters/08-longitudinal-time-series/autocorrelation.qmd
+    - part: "IX. Prediction and machine learning"
+      chapters:
+        - chapters/09-machine-learning/prediction-vs-inference.qmd
+        - chapters/09-machine-learning/validation-leakage.qmd
+        - chapters/09-machine-learning/regularization-trees.qmd
+        - chapters/09-machine-learning/interpretation.qmd
+    - part: "X. Bayesian models"
+      chapters:
+        - chapters/10-bayesian/frequentist-bayesian.qmd
+        - chapters/10-bayesian/priors-posteriors.qmd
+        - chapters/10-bayesian/hierarchical-models.qmd
+    - part: "XI. Reproducible case studies"
+      chapters:
+        - chapters/11-reproducibility/reporting-checklist.qmd
+        - chapters/11-reproducibility/case-study-template.qmd
+    - glossary.qmd
+    - references.qmd
+
+bibliography: references.bib
+csl: styles.csl
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    code-fold: show
+    code-tools: true
+    number-sections: true
+    crossrefs-hover: true
+  pdf:
+    documentclass: scrreprt
+
+execute:
+  freeze: auto
+  warning: false
+  message: false
