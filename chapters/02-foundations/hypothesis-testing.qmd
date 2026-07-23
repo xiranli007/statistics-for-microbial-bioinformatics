@@ -1,0 +1,10 @@
+# Hypothesis tests and evidence
+
+**Status:** planned chapter.
+
+Learn null models, test statistics, p-values, Type I/II errors, equivalence and
+non-inferiority, and the difference between absence of evidence and evidence of
+absence.
+
+**Case-study plan:** comparing a microbial outcome with a regulatory threshold.
+
