@@ -1,0 +1,73 @@
+# Statistical thinking before statistical testing
+
+## Four goals that are often confused
+
+| Goal | Typical question | Appropriate output |
+|---|---|---|
+| Description | What patterns are present in these samples? | summaries, visualization, ordination |
+| Inference | What does the sample imply about a population? | estimate and uncertainty interval |
+| Causal inference | What would change under an intervention? | treatment-effect estimand under explicit assumptions |
+| Prediction | How accurately can unseen outcomes be predicted? | out-of-sample performance |
+
+PCA can describe dominant variation, but it does not by itself test whether
+treatments differ. A small p-value can support incompatibility with a null
+model, but it does not show that an effect is large, causal, or reproducible.
+A high training accuracy does not establish good prediction on new experiments.
+
+## Start with the estimand
+
+An **estimand** is the population quantity the analysis aims to estimate. For a
+sanitizer experiment, different estimands include:
+
+- mean log-reduction after 10 minutes;
+- mean difference in log-reduction between sanitizers;
+- ratio of expected viable counts;
+- probability that a treated system falls below a detection threshold;
+- average change in community composition attributable to treatment.
+
+These are not interchangeable. Naming the estimand reveals the required outcome
+scale and usually narrows the model family.
+
+## Identify the experimental unit
+
+Suppose sanitizer is assigned to 12 recirculating wash-water systems. From every
+system, three aliquots are plated and five colonies are measured. There are:
+
+- 12 experimental units;
+- 36 technical aliquots;
+- 180 colony-level measurements.
+
+Treating all 180 measurements as independent creates **pseudoreplication**.
+Technical replication can improve measurement precision, but it does not create
+new independent treatment assignments.
+
+## Build a design map
+
+Before fitting a model, write:
+
+1. unit sampled from the target population;
+2. unit assigned to treatment;
+3. observational unit represented by each row;
+4. repeated, nested, crossed, blocked, or paired relationships;
+5. potential confounders and batch variables;
+6. missingness and censoring mechanisms.
+
+This design map determines whether ordinary regression is sufficient or whether
+blocking, cluster-robust uncertainty, random effects, or another dependence
+model is required.
+
+## Effect size before significance
+
+Report the estimated biological contrast and its uncertainty. A p-value answers
+a narrower question: assuming a specified null model and its assumptions, how
+incompatible are data at least this extreme with that model? It is not the
+probability that the null hypothesis is true.
+
+## Knowledge check
+
+1. If 20 tanks receive treatments and 10 fish are sampled per tank, what is the
+   experimental unit?
+2. Is a PCA separation a significance test?
+3. How would “mean difference in log CFU/mL” and “fold change in CFU/mL” lead to
+   different interpretations?
+
