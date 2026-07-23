@@ -1,0 +1,38 @@
+datasets:
+  micrompn_plasmid_retention:
+    title: "Plasmid stability counts from MicroMPN soil microcosms"
+    article:
+      citation_key: francomelendez2024micrompn
+      title: "MicroMPN: methods and software for high-throughput screening of microbe suppression in mixed populations"
+      journal: "Microbiology Spectrum"
+      year: 2024
+      doi: "10.1128/spectrum.03578-23"
+      peer_reviewed: true
+    data:
+      repository: "USDA-ARS-GBRU/MicroMPN_data-files"
+      repository_url: "https://github.com/USDA-ARS-GBRU/MicroMPN_data-files"
+      source_commit: "af4ca88afda1ea3c446ee2d4d9c2245e0eabe0e1"
+      source_path: "plasmid_retention/R_analysis/data_simple_complex.csv"
+      local_path: "data/raw/micrompn_plasmid_retention.csv"
+      source_sha256: "971729f84ec21d21b2339de034d6f478e3aa4b2a8b9d6f9d112412e8b015ca95"
+      local_sha256: "dc3435e693e61fca2ed964af45b4a5306c4d9a464ef8ca00cde5b7ecbf1d79f0"
+      license: "CC0-1.0"
+    design:
+      organism: "Ralstonia solanacearum strain Rs5 carrying pFLxR5"
+      matrix: "soil microcosms, with or without a 10-member synthetic bacterial community"
+      response: "log10 CFU/g"
+      pairing: "the same soil sample was plated on SMSA agar containing 0 or 20 mg/L gentamicin"
+      experimental_unit: "soil microcosm well/sample; paired plates are measurements of the same unit"
+      sample_sizes: "n=8 pairs at each unamended-soil time point (Days 0-3); n=75 pairs for community-amended soil (Day 4 label in the archived file)"
+    preprocessing:
+      - "CRLF source line endings are normalized to LF in the versioned local copy."
+      - "Column names are stripped of trailing spaces."
+      - "gent.20 minus gent.0 is the paired log10-count contrast."
+      - "No observations are removed or altered."
+    used_in:
+      - "chapters/02-foundations/probability-sampling.qmd"
+      - "chapters/02-foundations/estimation-uncertainty.qmd"
+      - "chapters/02-foundations/hypothesis-testing.qmd"
+      - "chapters/02-foundations/resampling-power.qmd"
+      - "chapters/02-foundations/multiple-testing.qmd"
+      - "chapters/03-classical-tests/t-tests.qmd"
