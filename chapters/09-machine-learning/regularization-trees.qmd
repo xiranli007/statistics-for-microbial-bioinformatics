@@ -1,0 +1,9 @@
+# Regularization and tree-based models
+
+**Status:** planned chapter.
+
+Learn ridge, lasso, elastic net, random forests, gradient boosting, probability
+calibration, class imbalance, and honest comparison with simple baselines.
+
+**Case-study plan:** AMR phenotype prediction from genomic features.
+
