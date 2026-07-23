@@ -1,0 +1,10 @@
+# Batch effects and unwanted variation
+
+**Status:** planned chapter.
+
+Learn design balance, confounding, blocking, batch covariates, unwanted-variation
+methods, batch-aware validation, and why correction cannot recover perfect
+confounding.
+
+**Case-study plan:** sequencing runs confounded or balanced with treatment.
+
