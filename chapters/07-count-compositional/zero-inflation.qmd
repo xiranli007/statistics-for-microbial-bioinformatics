@@ -1,0 +1,9 @@
+# Zeros, detection limits, and zero inflation
+
+**Status:** planned chapter.
+
+Learn sampling versus structural zeros, censored observations, hurdle models,
+zero-inflated mixtures, identifiability, and when zero inflation is overused.
+
+**Case-study plan:** low-prevalence pathogen and ARG measurements.
+
