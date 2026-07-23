@@ -1,0 +1,9 @@
+# Logistic regression
+
+**Status:** planned chapter.
+
+Learn log odds, odds ratios, predicted probabilities, separation, calibration,
+and likelihood-ratio versus Wald inference.
+
+**Case-study plan:** probability of pathogen detection after enrichment.
+
