@@ -1,0 +1,9 @@
+# Priors, likelihoods, and posterior inference
+
+**Status:** planned chapter.
+
+Learn prior predictive checks, weakly informative priors, posterior intervals,
+probability statements, ROPEs, posterior predictive checks, and computation.
+
+**Case-study plan:** low-replication microbial inactivation estimates.
+
