@@ -1,0 +1,9 @@
+# Constrained ordination
+
+**Status:** planned chapter.
+
+Learn RDA, dbRDA, CCA, variance partitioning, permutation tests, and when a
+constrained view adds more than unconstrained ordination.
+
+**Case-study plan:** environmental drivers of aquaculture-water communities.
+
