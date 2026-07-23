@@ -1,0 +1,10 @@
+# Autocorrelation and time series
+
+**Status:** planned chapter.
+
+Learn serial correlation, stationarity, AR structures, interrupted time series,
+forecast evaluation, and the difference between many time points and many
+independent experimental units.
+
+**Case-study plan:** high-frequency sensor and microbial process measurements.
+
