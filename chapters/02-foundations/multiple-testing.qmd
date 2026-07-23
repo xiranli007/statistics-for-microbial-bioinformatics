@@ -1,9 +1,136 @@
 # Multiple testing and false discoveries
 
-**Status:** planned chapter.
+## Why multiplicity changes inference
 
-Learn family-wise error, false-discovery rate, Benjamini–Hochberg adjustment,
-independent filtering, and why “significant taxa” depend on the tested family.
+If many true null hypotheses are tested at \(\alpha=0.05\), some small p-values
+will occur by chance. The relevant number of tests is the **family of claims**,
+not necessarily every p-value generated anywhere in a project.
 
-**Case-study plan:** screening antimicrobial-resistance genes across treatments.
+Two common error targets are:
 
+- **family-wise error rate (FWER):** probability of at least one false rejection
+  in a family;
+- **false-discovery rate (FDR):** expected proportion of false rejections among
+  the rejected hypotheses.
+
+Bonferroni controls FWER by multiplying each p-value by the number of tests.
+Benjamini--Hochberg (BH) controls FDR under its assumptions and is usually less
+conservative when screening many features.
+
+## Real paper example: five paired comparisons
+
+The MicroMPN plasmid-retention analysis compared paired GEN-20 and GEN-0 counts
+across five time/system groups [@francomelendez2024micrompn]. The paper used a
+Bonferroni correction. The source data are registered as
+`micrompn_plasmid_retention`.
+
+```{python}
+#| label: multiple-testing-load
+
+from pathlib import Path
+import numpy as np
+import pandas as pd
+from scipy import stats
+from statsmodels.stats.multitest import multipletests
+
+counts = pd.read_csv(
+    Path("data/raw/micrompn_plasmid_retention.csv"),
+    skipinitialspace=True,
+)
+counts.columns = counts.columns.str.strip()
+
+rows = []
+for day, frame in counts.groupby("Day", sort=True):
+    result = stats.ttest_rel(frame["gent.20"], frame["gent.0"])
+    rows.append({
+        "comparison": day,
+        "pairs": len(frame),
+        "mean_difference": (frame["gent.20"] - frame["gent.0"]).mean(),
+        "raw_p": result.pvalue,
+    })
+
+tests = pd.DataFrame(rows)
+tests
+```
+
+## Bonferroni FWER control
+
+```{python}
+#| label: bonferroni
+
+tests["bonferroni_p"] = multipletests(
+    tests["raw_p"],
+    alpha=0.05,
+    method="bonferroni",
+)[1]
+tests
+```
+
+The community-amended soil comparison has raw \(p\approx0.0074\) and adjusted
+\(p\approx0.037\), reproducing the paper. Bonferroni is transparent and valid
+under arbitrary dependence, but it can have low power when the family is large.
+
+## Benjamini--Hochberg FDR control
+
+```{python}
+#| label: bh-adjustment
+
+tests["BH_q"] = multipletests(
+    tests["raw_p"],
+    alpha=0.05,
+    method="fdr_bh",
+)[1]
+tests
+```
+
+The BH-adjusted value is often called a q-value in applied reporting, although
+definitions of “q-value” vary by method. Do not choose FWER or FDR control based
+on which produces more stars:
+
+- use FWER when even one false claim in the family would be costly or when the
+  tests represent a small confirmatory set;
+- use FDR when screening many genes, taxa, metabolites, or pathways and some
+  false leads can be tolerated among discoveries.
+
+## Define the family before testing
+
+For the MicroMPN case, the five GEN-20 versus GEN-0 comparisons form a coherent
+family because they address the same plasmid-retention question. In an omics
+study, the family might be all genes tested for one prespecified contrast.
+
+Changing the family after seeing p-values invalidates the intended error control.
+Examples include:
+
+- excluding nonsignificant taxa after testing;
+- reporting only one contrast from a factorial model;
+- performing separate corrections within data-driven clusters;
+- treating each annotation database as unrelated without justification.
+
+## Independent filtering
+
+Feature filtering can improve power only when the filtering rule does not use
+the same evidence being tested under the null. Examples may include removing
+genes with too few counts to support inference before differential testing.
+Filtering by raw p-value and then applying BH is circular.
+
+Every omics chapter should report:
+
+1. the number of features before and after filtering;
+2. the filtering rule;
+3. the contrast-specific family;
+4. the adjustment method;
+5. both effect estimates and adjusted values.
+
+## Effect sizes remain primary
+
+Multiplicity adjustment changes the error criterion, not the biological
+magnitude. In the paper case, the adjusted result crossed 0.05, but the mean
+difference remained only \(-0.047\) log10 CFU/g. Adjustment never turns a small
+effect into a large one.
+
+## Knowledge check
+
+1. What family did the MicroMPN paper correct across?
+2. What different error rate is targeted by BH?
+3. Why is filtering features by raw p-value invalid before BH?
+4. Does an adjusted p-value describe biological importance?
