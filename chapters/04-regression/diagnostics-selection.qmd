@@ -1,0 +1,9 @@
+# Diagnostics, comparison, and model selection
+
+**Status:** planned chapter.
+
+Learn residual checks, influence, collinearity, nested likelihood-ratio tests,
+information criteria, cross-validation, and principled sensitivity analysis.
+
+**Case-study plan:** competing models for microbial growth under temperature.
+
