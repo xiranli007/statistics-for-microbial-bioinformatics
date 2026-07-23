@@ -1,0 +1,9 @@
+# PCoA and NMDS
+
+**Status:** planned chapter.
+
+Learn metric and nonmetric ordination, negative eigenvalues, NMDS stress,
+reproducibility across starts, and faithful interpretation of ordination plots.
+
+**Case-study plan:** taxonomic beta diversity across water treatments.
+
