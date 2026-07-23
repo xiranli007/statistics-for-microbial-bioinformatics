@@ -1,0 +1,9 @@
+# Differential abundance and expression
+
+**Status:** planned chapter.
+
+Learn negative-binomial workflows, contrasts, filtering, shrinkage, FDR,
+independent experimental units, and cross-method sensitivity.
+
+**Case-study plan:** ARG differential abundance after antibiotic exposure.
+
