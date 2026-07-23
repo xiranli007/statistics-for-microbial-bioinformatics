@@ -1,0 +1,72 @@
+# Choose a method from the study, not a menu
+
+## Decision sequence
+
+1. Define the estimand.
+2. Identify the independent sampling or assignment unit.
+3. Classify the outcome.
+4. Map pairing, repeated measures, nesting, blocking, and time.
+5. Decide whether the goal is explanation, causal inference, or prediction.
+6. Choose a model family.
+7. Predefine contrasts and diagnostics.
+
+## Starting map
+
+| Outcome / question | Independent observations | Dependent or clustered observations |
+|---|---|---|
+| Continuous, 2 groups | Welch t test / linear model | paired t test / linear mixed model |
+| Continuous, >2 groups | ANOVA / linear model | repeated-measures or mixed model |
+| Binary | logistic regression | mixed logistic model / GEE |
+| Counts with exposure | Poisson; check dispersion | mixed Poisson or negative binomial |
+| Overdispersed counts | negative-binomial regression | negative-binomial mixed model |
+| Proportion from successes/trials | binomial model | beta-binomial or mixed binomial |
+| Alpha diversity | regression appropriate to metric | mixed model where repeated |
+| Community composition | ordination for exploration; PERMANOVA for a test | restricted permutations / longitudinal methods |
+| Taxon-wise abundance | count/compositional model + FDR | design-aware model + FDR |
+| Prediction | held-out evaluation | group-aware or time-aware validation |
+
+This table is an entry point, not an automatic selector. Detection limits,
+structural zeros, nonlinear effects, unequal variance, small cluster counts, and
+batch effects can change the recommendation.
+
+## Common mismatches
+
+### PCA versus PERMANOVA
+
+PCA is an ordination: it represents directions of variance under Euclidean
+geometry. It does not provide a treatment p-value. PERMANOVA tests whether
+group centroids differ in a chosen distance space, but dispersion differences
+can affect interpretation and must be checked.
+
+### Paired versus independent t test
+
+Before/after samples from the same system are paired. Pairing models within-unit
+differences and usually reduces irrelevant baseline variation. An independent
+t test discards that structure and uses the wrong standard error.
+
+### ANOVA versus many t tests
+
+ANOVA provides an omnibus test of a predefined factor while controlling the
+single family-level test. Planned contrasts answer specific scientific
+questions. Unadjusted pairwise t tests inflate false-positive risk.
+
+### Ordinary regression versus mixed model
+
+Ordinary regression assumes residual independence after conditioning on
+predictors. Repeated measurements within a tank usually violate this. A mixed
+model can represent the shared tank-level variation and estimate population and
+tank-level effects together.
+
+## Minimum reporting set
+
+For every result, report:
+
+- biological estimand and experimental unit;
+- model formula, outcome distribution, and link;
+- effect estimate in interpretable units;
+- confidence/credible interval;
+- testing procedure and multiplicity correction;
+- assumption and diagnostic checks;
+- software and version;
+- sensitivity analyses that changed the conclusion.
+
