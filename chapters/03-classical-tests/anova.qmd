@@ -1,0 +1,9 @@
+# ANOVA, factorial designs, and contrasts
+
+**Status:** planned chapter.
+
+Learn ANOVA as linear regression, omnibus tests, planned contrasts, post-hoc
+comparisons, interactions, unequal variance, and blocked experiments.
+
+**Case-study plan:** temperature × sanitizer effects on log CFU reduction.
+
