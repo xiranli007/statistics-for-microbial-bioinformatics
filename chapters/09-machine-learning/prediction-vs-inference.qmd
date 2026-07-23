@@ -1,0 +1,10 @@
+# Prediction versus inference
+
+**Status:** planned chapter.
+
+Learn why predictive accuracy and coefficient evidence answer different
+questions, how to define a target population, and how decision costs shape
+performance metrics.
+
+**Case-study plan:** predicting contamination status from microbial profiles.
+
