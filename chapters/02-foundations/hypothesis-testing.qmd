@@ -1,10 +1,152 @@
 # Hypothesis tests and evidence
 
-**Status:** planned chapter.
+## What a test does
 
-Learn null models, test statistics, p-values, Type I/II errors, equivalence and
-non-inferiority, and the difference between absence of evidence and evidence of
-absence.
+A hypothesis test compares the observed data with a model in which a specified
+null claim is true. For a paired mean contrast,
 
-**Case-study plan:** comparing a microbial outcome with a regulatory threshold.
+$$
+H_0:\mu_d=0,\qquad H_A:\mu_d\ne0.
+$$
 
+The test statistic standardizes the estimate:
+
+$$
+t=\frac{\bar d-0}{s_d/\sqrt{n}}.
+$$
+
+The p-value is the probability, assuming the null model and its assumptions, of
+obtaining a test statistic at least as incompatible with the null as the one
+observed. It is not:
+
+- the probability that \(H_0\) is true;
+- the probability the result occurred “by chance”;
+- an effect size;
+- the probability the result will replicate.
+
+## Real paper case
+
+Franco Meléndez et al. compared paired *Ralstonia solanacearum* counts on agar
+with and without gentamicin while validating plasmid stability
+[@francomelendez2024micrompn]. The exact paper data and provenance are registered
+as `micrompn_plasmid_retention` in `data/datasets.yml`.
+
+```{python}
+#| label: hypothesis-load
+
+from pathlib import Path
+import pandas as pd
+from scipy import stats
+
+counts = pd.read_csv(
+    Path("data/raw/micrompn_plasmid_retention.csv"),
+    skipinitialspace=True,
+)
+counts.columns = counts.columns.str.strip()
+community = counts.loc[counts["Day"].eq("Day_4")]
+d = community["gent.20"] - community["gent.0"]
+
+test = stats.ttest_1samp(d, popmean=0)
+{"t": test.statistic, "df": len(d) - 1, "raw_p": test.pvalue}
+```
+
+The unadjusted two-sided p-value is about 0.0074. Because the paper evaluated
+five time/system comparisons, it used a Bonferroni adjustment:
+
+```{python}
+#| label: hypothesis-adjustment
+
+adjusted_p = min(test.pvalue * 5, 1)
+adjusted_p
+```
+
+This reproduces the reported adjusted \(p\approx0.037\).
+
+## Evidence against zero is not evidence of importance
+
+The estimated difference was only \(-0.047\) log10 CFU/g, about 1.11-fold on the
+original scale. The authors called the difference statistically significant but
+biologically negligible for plasmid retention.
+
+This is not a contradiction:
+
+- the p-value addresses compatibility with an exact zero difference;
+- biological relevance addresses the magnitude relative to a scientific
+  decision threshold.
+
+An exact-zero null can become easy to reject in a precise experiment even when
+the effect is too small to matter.
+
+## Type I and Type II errors
+
+If a decision rule rejects when \(p<\alpha\):
+
+- **Type I error:** reject a true null; its long-run probability is controlled
+  by \(\alpha\) under the test assumptions;
+- **Type II error:** fail to reject when a specified alternative is true;
+- **power:** probability of rejection under that specified alternative.
+
+Power is not a single property of a test. It depends on the true effect,
+variation, number of independent units, design, test, and significance rule.
+
+## “Not significant” does not prove no effect
+
+A nonsignificant result can reflect:
+
+- an effect close to zero;
+- an imprecise experiment;
+- high biological variation;
+- few independent units;
+- model misspecification;
+- multiplicity adjustment;
+- an effect in a direction not well represented by the test.
+
+Inspect the estimate and interval. A wide interval spanning both meaningful harm
+and benefit is inconclusive, not evidence of equivalence.
+
+## Equivalence and non-inferiority
+
+To demonstrate practical similarity, define a smallest effect of scientific
+interest before analysis. For a symmetric equivalence margin \(\Delta\):
+
+$$
+H_0:\mu_d\le-\Delta\ \text{or}\ \mu_d\ge\Delta,
+\qquad
+H_A:-\Delta<\mu_d<\Delta.
+$$
+
+The two one-sided tests procedure or an equivalent confidence-interval rule can
+then be used. Because the MicroMPN paper did not define a formal equivalence
+margin for this comparison, its result should not be rewritten as a formal
+equivalence claim.
+
+## A result hierarchy
+
+Interpret evidence in this order:
+
+1. Was the experimental unit correct?
+2. Was the estimand defined before looking at the result?
+3. What is the effect estimate and interval?
+4. Are assumptions and diagnostics credible?
+5. Was multiplicity handled for the intended family?
+6. Is the magnitude biologically important?
+
+## Reporting
+
+Avoid:
+
+> There was a significant effect (\(p<0.05\)).
+
+Prefer:
+
+> GEN-20 counts were 0.047 log10 CFU/g lower on average (95% CI 0.013 to
+> 0.081 lower; paired \(t(74)=-2.75\), Bonferroni-adjusted \(p=0.037\)).
+> The approximately 1.11-fold difference was judged negligible for the plasmid
+> retention objective.
+
+## Knowledge check
+
+1. What probability does the p-value represent?
+2. Why can a small effect have a small p-value?
+3. What is required before claiming equivalence?
+4. Why must multiple-testing adjustment follow a defined family of claims?
